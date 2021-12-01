@@ -2,67 +2,34 @@
 
 We will use the idea of the topological sort, we know that the topological sort can only be generated in the graph which is DAG, so if we are unable to generate topological sort using kahn's algo then we can say that the graph is cyclic, we are just using the reverse algorithm
 
-```cpp
-#include<bits/stdc++.h>
-using namespace std;
-
-// the basic idea is to check if the graph can generate topological sort array, then it does not contain cycle 
-// because we know that graph can generate topo sort only if it is DAG
-// so just write the code of topo sort and find out if the length of generated topo sort is equal to number of vertices then it does not contain cycle
-
-bool cycleBFS(int v, vector<int> adj[]){
-    queue<int> q;
-    vector<int> inDegree(v, 0);
-    
-    //find the indegree of all the nodes
-    for(int i=0; i<v; i++){
-        for(auto it : adj[i]){
-            inDegree[it]++;
+```java
+class Solution {
+    static void findTopoSort(int node, int vis[], ArrayList<ArrayList<Integer>> adj, Stack<Integer> st) {
+        vis[node] = 1; 
+        for(Integer it: adj.get(node)) {
+            if(vis[it] == 0) {
+                findTopoSort(it, vis, adj, st); 
+            } 
         }
+        st.push(node); 
     }
-    
-    //insert all having indegree 0 in the queue
-    for(int i=0; i<v; i++){
-        if(inDegree[i] == 0)
-            q.push(i);
-    }
-    
-    //count will keep record of number of elements in topo sort
-    int count =0;
-    
-    //kanhs algorithm 
-    while(!q.empty()){
-        int node = q.front();
-        q.pop();
-        count++;
-        for(auto it : adj[node]){
-            inDegree[it]--;
-            if(inDegree[it] == 0)
-                q.push(it);
+    static int[] topoSort(int N, ArrayList<ArrayList<Integer>> adj) {
+        Stack<Integer> st = new Stack<Integer>(); 
+        int vis[] = new int[N]; 
+        
+        for(int i = 0;i<N;i++) {
+            if(vis[i] == 0) {
+                findTopoSort(i, vis, adj, st);
+            }
         }
-    }
-    
-    //if elements in topo sort equals to total vertices then graph is DAG therefore, no cycle
-    if(count == v) return false;
-    
-    else return true;
-}
-int main(){
-    int n, m;
-    cin>>n>>m;
-    
-    vector<int> adj[n];
-    for(int i=0; i<m; i++){
-        int u, v;
-        cin>>u>>v;
         
-        adj[u].push_back(v);
-        
+        int topo[] = new int[N];
+        int ind = 0; 
+        while(!st.isEmpty()) {
+            topo[ind++] = st.pop();
+        }
+        // for(int i = 0;i<N;i++) System.out.println(topo[i] + " "); 
+        return topo; 
     }
-    
-    if(cycleBFS(n, adj)) cout<<"Yes";
-    else cout<<"No";
-    
-    return 0;
 }
 ```
