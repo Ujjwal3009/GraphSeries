@@ -29,62 +29,34 @@ Now we're going to find out the topo sort order using Kahn's algorithm, steps ar
 * space complexity would be ```O(N+E) + O(N) + O(N)``` for adjacency list, indegree array and queue ds
 
 
-```cpp
-#include<bits/stdc++.h>
-using namespace std;
-
-vector<int> topoSortBFS(int v, vector<int> adj[]){
-    queue<int> q;
-    vector<int> inDegree(v, 0);
-    vector<int> topo;
-    
-    //store the in degree of all nodes
-    for(int i=0; i<v; i++){
-        for(auto it : adj[i]){
-            inDegree[it]++;
+```java
+class Solution {
+    static void findTopoSort(int node, int vis[], ArrayList<ArrayList<Integer>> adj, Stack<Integer> st) {
+        vis[node] = 1; 
+        for(Integer it: adj.get(node)) {
+            if(vis[it] == 0) {
+                findTopoSort(it, vis, adj, st); 
+            } 
         }
+        st.push(node); 
     }
-    
-    //push all having indegree 0 in queue
-    for(int i=0; i<v; i++){
-        if(inDegree[i] == 0){
-            q.push(i);
-        }
-    }
-    
-    //kanhs algorithm or bfs
-    while(!q.empty()){
-        int node = q.front();
-        q.pop();
-        topo.push_back(node);
+    static int[] topoSort(int N, ArrayList<ArrayList<Integer>> adj) {
+        Stack<Integer> st = new Stack<Integer>(); 
+        int vis[] = new int[N]; 
         
-        for(auto it : adj[node]){
-            inDegree[it]--;
-            if(inDegree[it] == 0){
-                q.push(it);
+        for(int i = 0;i<N;i++) {
+            if(vis[i] == 0) {
+                findTopoSort(i, vis, adj, st);
             }
         }
-    }
-    
-    return topo;
-}
-
-int main(){
-    int n,m;
-    cin>>n>>m;
-    
-    vector<int> adj[n];
-    for(int i=0; i<m; i++){
-        int u,v;
-        cin>>u>>v;
         
-        adj[u].push_back(v);
+        int topo[] = new int[N];
+        int ind = 0; 
+        while(!st.isEmpty()) {
+            topo[ind++] = st.pop();
+        }
+        // for(int i = 0;i<N;i++) System.out.println(topo[i] + " "); 
+        return topo; 
     }
-    
-    vector<int> ans = topoSortBFS(n, adj);
-    for(int i=0; i<ans.size(); i++){
-        cout<<ans[i]<<" ";
-    }
-    return 0;
 }
 ```
